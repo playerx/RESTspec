@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>RESTspec — Route Definition Specification</title>
+  <style>
+    :root {
+      --bg: #fdfdfd;
+      --fg: #1a1a1a;
+      --muted: #666;
+      --border: #e0e0e0;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --code-bg: #f5f5f5;
+      --tag-bg: #e8e8e8;
+      --success: #16a34a;
+      --warn: #d97706;
+      --section-bg: #fafafa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 0;
+      background: var(--section-bg);
+    }
+
+    header .container {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    header .version {
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--tag-bg);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    header .subtitle {
+      width: 100%;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      overflow-x: auto;
+    }
+
+    nav .container {
+      display: flex;
+      gap: 0;
+    }
+
+    nav a {
+      display: block;
+      padding: 0.6rem 1rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      color: var(--fg);
+      border-bottom-color: var(--accent);
+    }
+
+    main {
+      padding: 2.5rem 0 4rem;
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--accent);
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.6rem;
+      color: var(--fg);
+    }
+
+    h4 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin: 1.2rem 0 0.4rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    p {
+      margin-bottom: 0.8rem;
+    }
+
+    code {
+      font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 1.2rem 1.4rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.84rem;
+      line-height: 1.6;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    .keyword {
+      color: #cba6f7;
+    }
+
+    .string {
+      color: #a6e3a1;
+    }
+
+    .type {
+      color: #89b4fa;
+    }
+
+    .comment {
+      color: #6c7086;
+      font-style: italic;
+    }
+
+    .fn {
+      color: #f9e2af;
+    }
+
+    .punct {
+      color: #9399b2;
+    }
+
+    .num {
+      color: #fab387;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--section-bg);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+
+    td code {
+      font-size: 0.84em;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-get {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-post {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-put {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-patch {
+      background: #fce7f3;
+      color: #be185d;
+    }
+
+    .badge-delete {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .badge-query {
+      background: #f3e8ff;
+      color: #7c3aed;
+    }
+
+    .badge-required {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .badge-optional {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .note {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+    }
+
+    .note strong {
+      color: var(--accent);
+    }
+
+    .warn {
+      background: #fffbeb;
+      border-left-color: var(--warn);
+    }
+
+    .warn strong {
+      color: var(--warn);
+    }
+
+    ul,
+    ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.3rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .two-col>div {
+      min-width: 0;
+    }
+
+    @media (max-width: 700px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .diagram {
+      background: var(--section-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--muted);
+    }
+
+    .term {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .term dt {
+      font-weight: 600;
+      min-width: 140px;
+      flex-shrink: 0;
+    }
+
+    .term dd {
+      color: var(--muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container">
+      <h1>RESTspec</h1>
+      <span class="version">Draft v0.7</span>
+      <p class="subtitle">A specification for declarative, type-safe HTTP route definitions</p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <a href="#introduction">Introduction</a>
+      <a href="#terminology">Terminology</a>
+      <a href="#schema">Route Schema</a>
+      <a href="#methods">Methods</a>
+      <a href="#path-params">Path Parameters</a>
+      <a href="#request">Request</a>
+      <a href="#response">Response</a>
+      <a href="#known_implementations">Known Implementations</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- 1. Introduction -->
+    <section id="introduction">
+      <h2>1. Introduction</h2>
+      <p>
+        RESTspec defines a standard structure for describing HTTP API routes in a declarative, language-agnostic way.
+        A RESTspec definition captures the <strong>methods</strong>, <strong>paths</strong>, <strong>inputs</strong>,
+        and <strong>outputs</strong> of an API as a single structured object. This object can then be consumed by
+        server frameworks, client generators, documentation tools, or validation layers.
+      </p>
+      <p>
+        The specification is deliberately minimal. It does not prescribe a transport, serialization format,
+        or validation library. Instead, it defines the <em>shape</em> of a route contract and the rules that
+        conforming implementations must follow.
+      </p>
+
+      <h3>Goals</h3>
+      <ul>
+        <li>A single source of truth for API shape shared between server and client.</li>
+        <li>Language-level type safety derived from route definitions (e.g. TypeScript, Go structs, Rust types).</li>
+        <li>Optional runtime validation when a schema library (Zod, Ajv, Valibot, etc.) is used.</li>
+        <li>Portability across server frameworks (Express, Hono, Fastify, etc.) and client transports (fetch, Axios,
+          etc.).</li>
+      </ul>
+
+      <h3>Non-Goals</h3>
+      <ul>
+        <li>Replacing OpenAPI or JSON Schema for public API documentation.</li>
+        <li>Defining middleware, authentication, or authorization.</li>
+        <li>Prescribing a specific validation library.</li>
+      </ul>
+    </section>
+
+    <!-- 2. Terminology -->
+    <section id="terminology">
+      <h2>2. Terminology</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Term</th>
+            <th>Definition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Route Schema</strong></td>
+            <td>The top-level object describing all routes in an API. Organized by method, then by path.</td>
+          </tr>
+          <tr>
+            <td><strong>Route Entry</strong></td>
+            <td>A single route definition at a given method + path combination. Contains fields for payload, query
+              parameters, and response.</td>
+          </tr>
+          <tr>
+            <td><strong>Path Template</strong></td>
+            <td>A URL path containing zero or more colon-prefixed parameters (e.g. <code>/users/:id</code>).</td>
+          </tr>
+          <tr>
+            <td><strong>Payload</strong></td>
+            <td>The request body. Only applicable to methods that carry a body (POST, PUT, PATCH, DELETE, and custom
+              methods).</td>
+          </tr>
+          <tr>
+            <td><strong>Query Params</strong></td>
+            <td>Key-value parameters appended to the URL query string.</td>
+          </tr>
+          <tr>
+            <td><strong>Response</strong></td>
+            <td>The expected shape of a successful response body.</td>
+          </tr>
+          <tr>
+            <td><strong>Server Binding</strong></td>
+            <td>An implementation that reads a Route Schema and registers handlers on a server framework.</td>
+          </tr>
+          <tr>
+            <td><strong>Client Binding</strong></td>
+            <td>An implementation that reads a Route Schema and provides a typed interface for making HTTP requests.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Schema Object</strong></td>
+            <td>A runtime validation object (e.g. Zod schema) that can both describe and validate a type. Optional —
+              when absent, type safety is compile-time only.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Route Schema -->
+    <section id="schema">
+      <h2>3. Route Schema</h2>
+      <p>A Route Schema is a structured object with the following shape:</p>
+
+      <pre><code>{
+  <span class="type">METHOD</span>: {
+    <span class="string">"PATH_TEMPLATE"</span>: <span class="type">RouteEntry</span>,
+    <span class="string">"PATH_TEMPLATE"</span>: <span class="type">RouteEntry</span>,
+    ...
+  },
+  ...
+}</code></pre>
+
+      <p>The first level keys are HTTP methods. The second level keys are path templates. Each value is a Route Entry.
+      </p>
+
+      <h3>3.1 Route Entry</h3>
+      <p>A Route Entry describes a single endpoint. It contains the following fields:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Required</th>
+            <th>Availability</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>response</code></td>
+            <td><span class="badge badge-required">required</span></td>
+            <td>All methods</td>
+            <td>The shape of the response body. Can be a schema object or a static type declaration.</td>
+          </tr>
+          <tr>
+            <td><code>payload</code></td>
+            <td><span class="badge badge-optional">optional</span></td>
+            <td>POST, PUT, PATCH, DELETE, custom methods</td>
+            <td>The shape of the request body. <strong>MUST NOT</strong> appear on GET entries.</td>
+          </tr>
+          <tr>
+            <td><code>queryParams</code></td>
+            <td><span class="badge badge-optional">optional</span></td>
+            <td>All methods</td>
+            <td>The shape of the URL query parameters.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 Type Representations</h3>
+      <p>Each field in a Route Entry can be expressed in one of two ways, depending on the implementation:</p>
+
+      <div class="two-col">
+        <div>
+          <h4>Schema Objects (runtime)</h4>
+          <p>A runtime validation object that can parse and validate data. Enables both compile-time type inference and
+            runtime validation.</p>
+          <pre><code><span class="comment">// Example: Zod</span>
+{
+  response: z.<span class="fn">object</span>({
+    id: z.<span class="fn">string</span>(),
+    name: z.<span class="fn">string</span>(),
+  })
+}</code></pre>
+        </div>
+        <div>
+          <h4>Static Types (compile-time)</h4>
+          <p>A language-level type declaration. Provides compile-time type safety with zero runtime cost. No validation
+            occurs.</p>
+          <pre><code><span class="comment">// Example: TypeScript type</span>
+{
+  response: {
+    id: <span class="type">string</span>
+    name: <span class="type">string</span>
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Implementer note:</strong> A conforming implementation MUST support at least one of these
+        representations.
+        Supporting both is RECOMMENDED.
+      </div>
+
+      <h3>3.3 Full Example</h3>
+      <pre><code>{
+  <span class="type">GET</span>: {
+    <span class="string">"/users"</span>: {
+      queryParams: { page: <span class="type">number</span>, limit: <span class="type">number</span> },
+      response:    { items: <span class="type">User[]</span>, total: <span class="type">number</span> }
+    },
+    <span class="string">"/users/:id"</span>: {
+      response: { id: <span class="type">string</span>, name: <span class="type">string</span>, email: <span class="type">string</span> }
+    }
+  },
+  <span class="type">POST</span>: {
+    <span class="string">"/users"</span>: {
+      payload:  { name: <span class="type">string</span>, email: <span class="type">string</span> },
+      response: { id: <span class="type">string</span> }
+    }
+  },
+  <span class="type">DELETE</span>: {
+    <span class="string">"/users/:id"</span>: {
+      response: <span class="type">void</span>
+    }
+  }
+}</code></pre>
+    </section>
+
+    <!-- 4. Methods -->
+    <section id="methods">
+      <h2>4. HTTP Methods</h2>
+      <p>RESTspec defines the following standard methods. Implementations MAY support additional custom methods.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Has Payload</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-get">GET</span></td>
+            <td>No</td>
+            <td>Retrieve a resource. MUST NOT include a <code>payload</code> field.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-post">POST</span></td>
+            <td>Yes</td>
+            <td>Create a resource or trigger an action.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-put">PUT</span></td>
+            <td>Yes</td>
+            <td>Replace a resource entirely.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-patch">PATCH</span></td>
+            <td>Yes</td>
+            <td>Partially update a resource.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-delete">DELETE</span></td>
+            <td>Yes</td>
+            <td>Remove a resource. Payload is optional but permitted.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>4.1 Custom Methods</h3>
+      <p>
+        Implementations MAY support custom HTTP methods (e.g. <span class="badge badge-query">QUERY</span>)
+        as top-level keys in the Route Schema. Custom methods follow the same Route Entry structure as standard methods
+        and carry a payload by default.
+      </p>
+      <p>
+        When a server binding encounters a custom method, it SHOULD register a catch-all handler for the path and
+        reject requests whose HTTP method does not match. The RECOMMENDED rejection status is
+        <code>405 Method Not Allowed</code>.
+      </p>
+    </section>
+
+    <!-- 5. Path Parameters -->
+    <section id="path-params">
+      <h2>5. Path Parameters</h2>
+      <p>Path parameters are defined using colon-prefixed segments within path templates.</p>
+
+      <h3>5.1 Syntax</h3>
+      <p>A parameter segment begins with <code>:</code> followed by an identifier: <code>/resource/:paramName</code>.
+        Multiple parameters may appear in a single path.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Path Template</th>
+            <th>Extracted Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/users/:id</code></td>
+            <td><code>{ id: string }</code></td>
+          </tr>
+          <tr>
+            <td><code>/orgs/:orgId/members/:memberId</code></td>
+            <td><code>{ orgId: string, memberId: string }</code></td>
+          </tr>
+          <tr>
+            <td><code>/health</code></td>
+            <td><em>(none)</em></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5.2 Rules</h3>
+      <ul>
+        <li>All path parameter values are <strong>strings</strong>. Type coercion is the responsibility of the handler.
+        </li>
+        <li>Parameter names MUST be valid identifiers (alphanumeric and underscores).</li>
+        <li>A path MUST NOT contain duplicate parameter names.</li>
+      </ul>
+
+      <h3>5.3 Substitution</h3>
+      <p>Client bindings MUST replace each <code>:param</code> segment with the corresponding value before making a
+        request.
+        If a required parameter is missing, the client MUST throw an error.</p>
+
+      <pre><code><span class="comment">// Template:  /orgs/:orgId/members/:memberId</span>
+<span class="comment">// Params:    { orgId: "acme", memberId: "42" }</span>
+<span class="comment">// Result:    /orgs/acme/members/42</span></code></pre>
+
+      <h3>5.4 Server Access</h3>
+      <p>Server bindings MUST expose path parameter values to handlers. The mechanism is framework-specific
+        (e.g. <code>req.params</code> in Express, <code>c.req.param()</code> in Hono).</p>
+    </section>
+
+    <!-- 6. Request -->
+    <section id="request">
+      <h2>6. Request Format</h2>
+      <p>A conforming client MUST construct requests as follows:</p>
+
+      <h3>6.1 URL Construction</h3>
+      <ol>
+        <li>Start with the base URL.</li>
+        <li>Append the path template after substituting all path parameters.</li>
+        <li>If <code>queryParams</code> are provided, serialize them as a URL query string and append.</li>
+      </ol>
+
+      <h3>6.2 Body Serialization</h3>
+      <ul>
+        <li>The default content type is <code>application/json</code>.</li>
+        <li>The <code>payload</code> field is serialized as JSON in the request body.</li>
+        <li>GET requests MUST NOT include a request body.</li>
+      </ul>
+
+      <h3>6.3 Headers</h3>
+      <p>Implementations SHOULD provide a mechanism for injecting custom headers (e.g. authorization tokens)
+        into every request. The header provider MAY be synchronous or asynchronous.</p>
+    </section>
+
+    <!-- 7. Response -->
+    <section id="response">
+      <h2>7. Response Format</h2>
+
+      <h3>7.1 Success Responses</h3>
+      <ul>
+        <li>A successful response has an HTTP status in the <code>2xx</code> range.</li>
+        <li>The response body is parsed as JSON and MUST conform to the <code>response</code> field of the Route Entry.
+        </li>
+      </ul>
+
+      <h3>7.2 Void Responses</h3>
+      <p>When the <code>response</code> type is <code>void</code> (or equivalent), the client SHOULD NOT attempt
+        to parse the response body and SHOULD return <code>undefined</code> (or the language equivalent).</p>
+
+      <h3>7.3 Error Responses</h3>
+      <p>A response with a non-<code>2xx</code> status code is considered an error. The client SHOULD attempt
+        to parse the error body as JSON and surface the error message. See <a href="#errors">Section 9</a>.</p>
+    </section>
+
+    <!-- 8. Conformance -->
+    <section id="known_implementations">
+      <h2>8. Known Implementations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Library</th>
+            <th>Language</th>
+            <th>Server</th>
+            <th>Client</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code><a href="https://github.com/jokio/rpc" target="_blank">@jokio/rpc</a></code></td>
+            <td>TypeScript</td>
+            <td>Express</td>
+            <td>fetch</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      RESTspec Draft v0.7
+    </div>
+  </footer>
+
+</body>
+
+</html>
